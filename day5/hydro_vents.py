@@ -3,7 +3,6 @@ class Line:
         self.p1 = p1
         self.p2 = p2
 
-
 class Point:
     def __init__(self, x, y):
         self.x = x
@@ -22,26 +21,32 @@ def get_all_lines(input):
     return lines
 
 def create_map(lines):
-    map = [[0 for c in range(10)] for r in range(10)]
+    map = [[0 for c in range(1000)] for r in range(1000)]
     for line in lines:
         if (line.p1.x == line.p2.x):
-            for yIndex in range(line.p1.y, line.p2.y):
-                map[line.p1.x][yIndex] += 1
+            if line.p1.y < line.p2.y:
+                for yIndex in range(line.p1.y, line.p2.y+1, 1):
+                    map[line.p1.x][yIndex] += 1
+            else:
+                for yIndex in range(line.p1.y, line.p2.y-1, -1):
+                    map[line.p1.x][yIndex] += 1
         elif (line.p1.y == line.p2.y):
-            for xIndex in range(line.p1.x, line.p2.x):
-                map[xIndex][line.p1.y] += 1
+            if (line.p1.x < line.p2.x):
+                for xIndex in range(line.p1.x, line.p2.x+1, 1):
+                    map[xIndex][line.p1.y] += 1
+            else:
+                for xIndex in range(line.p1.x, line.p2.x-1,-1):
+                    map[xIndex][line.p1.y] += 1
+
     return map
 
-inputFile = open("small_input5", "r")
+inputFile = open("input5", "r")
 
 input = inputFile.read().splitlines()
 
 lines = get_all_lines(input)
 
 map = create_map(lines)
-
-for row in map:
-    print(row)
 
 counter = 0
 for row in map:
