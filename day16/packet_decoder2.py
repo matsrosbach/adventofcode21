@@ -30,10 +30,10 @@ class Packet:
                 else:
                     self.literal *= p.literal
         elif self.type_id == 2:
-           self.literal = 100000000000
-           for p in self.subpackets:
-               if p.literal < self.literal:
-                   self.literal = p.literal
+            self.literal = self.subpackets[0].literal
+            for p in self.subpackets:
+                if p.literal < self.literal:
+                    self.literal = p.literal
         elif self.type_id == 3:
             self.literal = 0
             for p in self.subpackets:
@@ -67,6 +67,8 @@ def convert_transmission_to_binary(trans):
     return binary
 
 def convert_binary_string_to_hex(binstr):
+    if int(binstr, 2) == 0:
+        return "0"
     return (hex(int(binstr, 2))).lstrip("0x")
 
 def read_literals(idx, binary):
@@ -83,7 +85,6 @@ def read_literals(idx, binary):
             hex_number += convert_binary_string_to_hex(literal_binary)
             idx += 4
             break
-    print(hex_number, " : ", int(hex_number, 16))
     return hex_number, idx
 
 def nothing_but_zeroes(binary):
@@ -96,13 +97,14 @@ def nothing_but_zeroes(binary):
 def read_packets(binary):
     packets = []
     i = 0
-    while i < (len(binary) ):
+    while i < (len(binary)):
         if nothing_but_zeroes(binary[i:]):
             break
         packet, i = read_packet(i, binary)
         packets.append(packet)
 
     return packets
+
 
 def read_packet(idx, binary):
     version = binary[idx:(idx+3)]
@@ -130,7 +132,7 @@ def read_packet(idx, binary):
     return p, idx
 
 
-transmission = open("operator_input16_0", "r").read()
+transmission = open("input16", "r").read()
 transmission = transmission.rstrip()
 binary = convert_transmission_to_binary(transmission)
 idx = 0
